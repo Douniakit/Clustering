@@ -131,16 +131,23 @@ def cluster_hierarchical_interval(x_pos, x_dim, z_pos, z_dim, n, eps_x, row_heig
 
     # --- Stage 2: rows from Z, fixed-height bins, independently within each layer ---
     final_cluster_id = [None] * n
-    next_final_id = 0
+    next_final_id = 0   # counts UP for real clusters (always positive)
+    next_noise_id = 0   # counts DOWN for noise singletons (always negative)
     n_raw_total = 0
 
     for layer_key, indices in layers.items():
         if layer_key < 0:
             # Stage-1 noise singleton: stays its own final cluster, not
-            # split further by Z.
-            next_final_id -= 1
+            # split further by Z. Uses the SEPARATE noise counter --
+            # sharing one counter between real-cluster increments and
+            # noise decrements was a confirmed bug: decrementing an
+            # already-large positive counter does not reliably produce a
+            # negative id, it can land exactly on an id already assigned
+            # to an unrelated real cluster from a previous layer, merging
+            # two spatially distant groups purely by numeric coincidence.
+            next_noise_id -= 1
             for idx in indices:
-                final_cluster_id[idx] = next_final_id
+                final_cluster_id[idx] = next_noise_id
             continue
 
         idx_arr = np.array(indices)
@@ -157,8 +164,8 @@ def cluster_hierarchical_interval(x_pos, x_dim, z_pos, z_dim, n, eps_x, row_heig
                 next_final_id += 1
                 local_to_final[local_id] = next_final_id
             else:
-                next_final_id -= 1
-                local_to_final[local_id] = next_final_id
+                next_noise_id -= 1
+                local_to_final[local_id] = next_noise_id
 
         for local_pos, global_idx in enumerate(idx_arr):
             final_cluster_id[global_idx] = local_to_final[sub_row_id[local_pos]]

@@ -70,5 +70,5 @@ plt.show()
 # Optional: save one figure PER CLUSTER for a chosen method to figs/,
 # instead of opening a window per cluster. Uncomment and pick a method:
 # =========================================================================
-cid, clusters, n_raw = results["hierarchical_interval"]
-plot_clusters_one_by_one(boxes, cid, clusters, title_prefix="method1", output_dir="figs")
+#cid, clusters, n_raw = results["hierarchical_interval"]
+#plot_clusters_one_by_one(boxes, cid, clusters, title_prefix="method1", output_dir="figs")
