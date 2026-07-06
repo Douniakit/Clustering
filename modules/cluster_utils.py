@@ -16,13 +16,15 @@ def finalize_clusters(cluster_id, n, give_noise_own_cluster=True):
     return cluster_id, clusters
 
 
-def print_summary(method_name, cluster_id, clusters, n_raw_clusters, n):
-    """Independent of clustering algorithm -- 'n_raw_clusters' is just
+def print_summary(result, n, title=None):
+    """Independent of clustering algorithm -- 'result' is a ClusterResult
+    (same shape for every ClusteringMethod subclass), and 'n_raw' is just
     the count of clusters found before noise-singleton relabeling,
     regardless of whether the method used DBSCAN or not."""
+    cluster_id, clusters, n_raw = result.cluster_id, result.clusters, result.n_raw
     n_noise = cluster_id.count(0) if 0 in cluster_id else sum(1 for c in cluster_id if c < 0)
-    print(f"\n--- {method_name} ---")
-    print(f"Produced {n_raw_clusters} raw clusters from {n} boxes ({n_noise} noise points)")
+    print(f"\n--- {title or result.method_name} ---")
+    print(f"Produced {n_raw} raw clusters from {n} boxes ({n_noise} noise points)")
     print(f"{len(clusters)} final walls")
     sizes = sorted((len(idxs) for cid, idxs in clusters.items() if cid > 0), reverse=True)
     print(f"cluster sizes (top 10): {sizes[:10]}")
