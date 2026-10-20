@@ -1,9 +1,5 @@
-## there are two env 
--- bt_sim
--- plotter_env
-
 ## 
-# Box Clustering Methods — Documentation
+# Box Clustering Methods 
 
 ## Problem
 
